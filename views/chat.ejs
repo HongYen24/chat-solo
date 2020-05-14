@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<style>
+body,html{
+    height: 100%;
+    background: #7F7FD5;
+    background: -webkit-linear-gradient(to right, #91EAE4, #86A8E7, #7F7FD5);
+    background: linear-gradient(to right, #91EAE4, #86A8E7, #7F7FD5);   
+}
+body,h1,h2,h3,h4,h5,h6 {font-family: "Amatic SC", sans-serif}
+.alert {
+    padding: 20px;
+    background-color: #f44336;
+    margin-top: 100px;
+}
+.closebtn {
+    margin-left: 15px;
+    color: white;
+    font-weight: bold;
+    float: right;
+    font-size: 22px;
+    line-height: 20px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+.closebtn:hover { color: black; }
+.send{
+  position: fixed;
+  border: 1px solid blue;
+  background-color: rgba(255,200,200,0.5); 
+  height: 180px; 
+  bottom: 0;
+  left: 0;
+  right: 0;
+}
+#content{
+    margin: auto;
+    width: 85%;
+    background-color: white;
+    margin-bottom: 150px;
+}
+
+</style>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat box</title>
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Amatic+SC">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <script src="jquery.js"></script>
+    <script src="socket.io/socket.io.js"></script>   
+</head>
+<body>
+    <!-- Login with image -->
+    <div id="register">
+        <div class="alert" id="alert">
+            <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span> 
+            <strong>Warning!</strong> Username is taken! Try some other username.
+        </div>
+        <div class="w3-display-bottomleft w3-padding">
+            <span class="w3-tag w3-xlarge">Please login to chat!</span>
+        </div>
+        <div class="w3-display-middle w3-center">
+            <span class="w3-text-white w3-hide-small" style="font-size:100px">LOG IN</span>
+            <span class="w3-text-white w3-hide-large w3-hide-medium" style="font-size:60px"><b>LOG IN</b></span>
+            <p><input class="w3-input w3-padding-16 w3-border" type="text" id="username" placeholder="Enter username" required></p>
+            <p class="w3-button w3-xxlarge w3-black" id= "userbtn">Let me chat</p>
+        </div>
+    </div>
+    <!-- Welcome -->
+    <div class="w3-container w3-black w3-padding-64 w3-xxlarge" id="welcome">
+        <h2 class='w3-center' style='margin-bottom:2px' id="wel"></h2>
+    </div>
+    <!-- Chat -->
+    <div class="w3-container w3-padding-64 w3-grayscale-min w3-xlarge" id="chatting">
+        <div class="w3-content">
+          <h2 class="w3-center" style="margin-bottom:24px">Chat message</h2> 
+            <div id="chat"> 
+                <p id="content"> </p>
+                <div class ="send">
+                    <p><input class="w3-input w3-padding-10" type="text" placeholder="Send message to" id = "to"></p>
+                    <p><input class="w3-input w3-padding-10" type="text" placeholder="Enter your message" id = "message"></p>
+                    <p><button class="w3-button w3-light-grey w3-block" type="submit" id= "subbtn">Send</button></p>
+                </div>
+            </div>          
+        </div>
+    </div>
+    
+</body>
+
+<script>
+    $(document).ready(function()
+    {
+        var socket = io("http://localhost:3000/");
+        var userList = [];
+
+        $('#welcome').hide();
+        $('#chatting').hide();
+        $('#alert').hide();
+
+        $('#userbtn').click(function(){
+            var name = $('#username').val();
+
+            socket.emit("login", {user: name});
+            socket.emit("ready", {user: name});            
+        })
+
+        $("#subbtn").click(function(){
+            var name = $('#username').val();
+            var mess = $('#message').val();
+            var rname = $('#to').val();
+
+            socket.emit("send", {message: mess, user: name, rname: rname});
+        })
+
+        socket.on("msg", function(data){
+            $("#content").append("<div><b>" + data.user + "</b>: " + data.message + "</div>");
+        })
+
+        socket.on("setUsername", function(data){
+            $('#register').hide();
+            $('#welcome').show();
+            $('#chatting').show();
+            $('#wel').append("<b>Welcome " + data.user + " to chat box!</b>");    
+        })
+
+        socket.on("userExists", function(data){
+            $('#register').show();
+            $('#alert').show();
+        })
+    })
+</script>
