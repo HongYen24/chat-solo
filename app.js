@@ -4,14 +4,6 @@ var app = express();
 var server = require('http').createServer(app);
 var io = require('socket.io')(server);
 
-var mongoose = require('mongoose');
-var mongoDB = 'mongodb+srv://userList1:HaeHyuk9813@dbms-awk1y.mongodb.net/local_library?retryWrites=true&w=majority';
-mongoose.connect(mongoDB, { useNewUrlParser: true });
-var db = mongoose.connection;
-db.on('error', console.error.bind(console, 'MongoDB connection error:'));
-
-require('./database/chat.js');
-
 app.use(express.static("public"));
 
 var bodyParser = require('body-parser');
@@ -23,8 +15,6 @@ app.set("views","./views");
 app.get('/', function(req, res){
    res.render('chat');
 })
-
-var chatModel = mongoose.model('chat');
 
 var users = [];
 var uList = [];
@@ -62,6 +52,8 @@ server.listen(3000, function () {
    console.log('run');
 });
 
-//const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3000;
  
-//server.listen(PORT, function () {  console.log('Server runs.'); });
+server.listen(PORT, function () {  
+   console.log('Server runs.'); 
+});

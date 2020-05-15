@@ -4,7 +4,8 @@
   "description": "testing",
   "main": "app.js",
   "scripts": {
-    "start": "nodemon app.js",
+    "dev": "nodemon --inspect app.js",
+    "start": "node app.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
@@ -13,7 +14,9 @@
     "ejs": "^3.1.2",
     "express": "^4.17.1",
     "jquery": "^3.5.0",
-    "nodemon": "^2.0.3",
     "socket.io": "^2.3.0"
+  },
+  "devDependencies":{
+    "nodemon": "^2.0.3"
   }
 }
